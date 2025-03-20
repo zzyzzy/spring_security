@@ -50,7 +50,7 @@ public class SecurityConfig {
         UserDetails admin = User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("password")
-                .roles("ADMIN")
+                .roles("ADMIN", "USER") // ADMIN과 USER 권한 가짐
                 .build();
 
         return new InMemoryUserDetailsManager(user, admin);

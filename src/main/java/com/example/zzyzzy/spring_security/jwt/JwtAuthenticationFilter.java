@@ -67,24 +67,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 3. 인증정보 확인 및 검증
         // 요청정보에 대해 아직 아무런 인증이 되지 않았다면 (중복인증 방지)
-        if (username != null &&
-            SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // 추출된 username을 이용해서 사용자 정보를 디비에서 조회
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(username);
+            log.info(">> JwtAuthenticationFilter - loadUserByUsername 호출!!");
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             // 가져온 토큰이 유효한지와
             // 토큰에 포함된 사용자 이름이 userDetails의 사용자이름과 동일한지 검사
-            if (jwtTokenProvider.validateToken(
-                    jwt, userDetails.getUsername())) {
-                
+            if (jwtTokenProvider.validateToken(jwt, userDetails.getUsername())) {
                 // 인증된 사용자 주체, 자격증명을 인증토큰에 저장
                 UsernamePasswordAuthenticationToken auth = 
-                    new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                auth.setDetails(
-                     new WebAuthenticationDetailsSource().buildDetails(req));
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 // 생성된 인증객체를 SecurityContextHolder의 현재 컨텍스트에 저장
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
